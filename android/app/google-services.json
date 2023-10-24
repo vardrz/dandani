@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "890095163742",
+    "project_id": "dandani-vard",
+    "storage_bucket": "dandani-vard.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890095163742:android:440f70b721ee76e5fb17cf",
+        "android_client_info": {
+          "package_name": "com.vard.dandani"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "890095163742-h86om3ffri5sa8kkp69h400ijind5jqt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vard.dandani",
+            "certificate_hash": "8de6e1d05286d142cc972dacf405f980ccea6d85"
+          }
+        },
+        {
+          "client_id": "890095163742-2mmjpfcdues0ggvtj6f6kp7erfun78fi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAf-bBIc3b5AuncONe32qIBJKeLPU80Vw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "890095163742-2mmjpfcdues0ggvtj6f6kp7erfun78fi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
