@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-import 'package:dandani/providers/homeAPI.dart';
-
+import 'package:dandani/models/listMitra.dart';
 import 'package:dandani/util/colors.dart';
 import 'package:dandani/widgets/widget.dart';
-
-import 'package:dandani/pages/account.dart';
-import 'package:dandani/pages/chat.dart';
-import 'package:dandani/pages/mitra.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,69 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Bottom Navigation
-  int _selectedIndex = 0;
-
-  final List<Widget> _pages = [
-    HomePageContent(),
-    ListChatPage(),
-    MitraPage(),
-    AccountPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: _pages[_selectedIndex],
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 10, // Penyebaran bayangan
-                blurRadius: 20, // Ketajaman bayangan
-                offset: Offset(0, 2), // Posisi bayangan (x, y)
-              ),
-            ],
-          ),
-          child: MoltenBottomNavigationBar(
-            selectedIndex: _selectedIndex,
-            onTabChange: _onItemTapped,
-            // borderSize: 2,
-            borderColor: purplePrimary,
-            barColor: white,
-            domeCircleColor: purplePrimary,
-            borderRaduis: BorderRadius.all(Radius.zero),
-            tabs: [
-              MoltenTab(
-                  icon: Icon(Icons.home),
-                  selectedColor: white,
-                  unselectedColor: grey),
-              MoltenTab(
-                  icon: Icon(Icons.chat_bubble),
-                  selectedColor: white,
-                  unselectedColor: grey),
-              MoltenTab(
-                  icon: Icon(Icons.store),
-                  selectedColor: white,
-                  unselectedColor: grey),
-              MoltenTab(
-                  icon: Icon(Icons.account_circle),
-                  selectedColor: white,
-                  unselectedColor: grey),
-            ],
-          ),
-        ));
-  }
-}
-
-class HomePageContent extends StatelessWidget {
   // Slider Image
   static final List<String> imgList = [
     'dummy-banner.jpg',
@@ -88,6 +21,7 @@ class HomePageContent extends StatelessWidget {
     'dummy-banner.jpg'
   ];
 
+  // Slider
   final CarouselSlider autoPlayImage = CarouselSlider(
     options: CarouselOptions(
       autoPlay: true,
@@ -107,10 +41,32 @@ class HomePageContent extends StatelessWidget {
     }).toList(),
   );
 
+  // API
+  late Future<List<ListMitra>> mitras;
+
+  @override
+  void initState() {
+    super.initState();
+    mitras = fetchAPI();
+  }
+
+  Future<List<ListMitra>> fetchAPI() async {
+    final response =
+        await http.get(Uri.parse('http://dandani.vaard.site/mitras'));
+    // 'https://mocki.io/v1/7687ad8e-4099-41be-943f-f120b54013cc'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonList = json.decode(response.body);
+      List<ListMitra> mitraList =
+          jsonList.map((json) => ListMitra.fromJson(json)).toList();
+      return mitraList;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final listMitras = Provider.of<HomeApiProvider>(context);
-
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -243,39 +199,43 @@ class HomePageContent extends StatelessWidget {
                     ),
                     // Show
                     FutureBuilder(
-                      future: listMitras.fetchData(),
+                      future: mitras,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
+                        if (snapshot.hasData) {
+                          List<ListMitra> mitraList = snapshot.data!;
+                          return Transform.translate(
+                            offset: Offset(0, -40),
+                            child: StaggeredGridView.countBuilder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              crossAxisCount: 2,
+                              itemCount: mitraList.length,
+                              itemBuilder: (BuildContext context, int index) =>
+                                  jasaListWidget(
+                                account: mitraList[index].account,
+                                name: mitraList[index].name,
+                                specialist: mitraList[index].specialist,
+                                district: mitraList[index].district,
+                                city: mitraList[index].city,
+                                photo: mitraList[index].photo,
+                              ),
+                              staggeredTileBuilder: (int index) =>
+                                  StaggeredTile.fit(1),
+                              mainAxisSpacing: 8.0,
+                              crossAxisSpacing: 8.0,
+                            ),
+                          );
                         } else if (snapshot.hasError) {
                           return Center(
                               child: Text('Error: ${snapshot.error}'));
-                        } else {
-                          return ListView.builder(
-                            itemCount: listMitras.mitra.length,
-                            itemBuilder: (context, index) {
-                              final mitra = listMitras.mitra[index];
-                              return ListTile(
-                                title: Text(mitra['name']),
-                              );
-                            },
-                          );
                         }
+
+                        return Padding(
+                          padding: EdgeInsets.only(top: 50),
+                          child: const CircularProgressIndicator(),
+                        );
                       },
-                    ),
-                    // Column(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     for (var i = 0; i < 3; i++) ...[
-                    //       jasaListWidget(
-                    //           nama: 'Semoga berkah Computer',
-                    //           specialist: 'Laptop',
-                    //           alamat: 'Pekalongan',
-                    //           foto: 'assets/dummy-banner.jpg'),
-                    //     ],
-                    //   ],
-                    // )
+                    )
                   ],
                 ),
               )

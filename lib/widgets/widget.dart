@@ -1,3 +1,6 @@
+import 'package:dandani/models/detailMitra.dart';
+import 'package:dandani/providers/mitra.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:dandani/util/colors.dart';
 
@@ -40,46 +43,165 @@ class kategoriWidget extends StatelessWidget {
 }
 
 class jasaListWidget extends StatelessWidget {
-  final String nama;
+  final String account;
+  final String name;
   final String specialist;
-  final String alamat;
-  final String foto;
+  final String district;
+  final String city;
+  final String photo;
 
   const jasaListWidget(
-      {required this.nama,
+      {required this.account,
+      required this.name,
       required this.specialist,
-      required this.alamat,
-      required this.foto});
+      required this.district,
+      required this.city,
+      required this.photo});
 
   @override
   Widget build(BuildContext context) {
+    final Mitra mitra = Mitra(
+      account,
+      name,
+      specialist,
+      district,
+      city,
+      photo,
+    );
+
     return InkWell(
       onTap: () {
-        print('pressed jasa service');
+        Provider.of<MitraProvider>(context, listen: false).setMitra(mitra);
+        Navigator.pushNamed(context, '/detail');
+        print('pressed ' + name);
       },
-      child: Card(
-        child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.2,
+      child: Column(
+        children: [
+          Container(
+            height: 180,
+            width: double.infinity,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Row(
+                image: DecorationImage(
+                    fit: BoxFit.cover, image: NetworkImage(photo))),
+            child: Wrap(
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: Image.asset(foto),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(10.0)),
+                    color: purplePrimaryTrans,
+                  ),
+                  // color: purplePrimary,
+                  child: Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text(
+                      district,
+                      style: TextStyle(color: white),
+                    ),
+                  ),
                 ),
-                Column(
-                  children: [
-                    Text(nama),
-                    Text(specialist),
-                    Text(alamat),
-                  ],
-                )
               ],
-            )),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(5),
+                  bottomRight: Radius.circular(5)),
+              color: white,
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            // color: white,
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 5),
+                    child: Text(
+                      name,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      city,
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ),
+                  BadgeWidget(specialist: specialist)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class BadgeWidget extends StatelessWidget {
+  final String specialist;
+
+  BadgeWidget({required this.specialist});
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> badgeTexts = specialist.split(', ');
+
+    return Wrap(
+      spacing: 2.0,
+      children: badgeTexts.map((text) => buildBadge(text)).toList(),
+    );
+  }
+
+  Widget buildBadge(String text) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 2),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          color: Colors.indigo),
+      child: Padding(
+        padding: EdgeInsets.all(3),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 10, color: white),
+        ),
+      ),
+    );
+  }
+}
+
+class BadgeWidget2 extends StatelessWidget {
+  final String specialist;
+
+  BadgeWidget2({required this.specialist});
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> badgeTexts = specialist.split(', ');
+
+    return Wrap(
+      spacing: 2.0,
+      children: badgeTexts.map((text) => buildBadge(text)).toList(),
+    );
+  }
+
+  Widget buildBadge(String text) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 2),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          color: Colors.indigo),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 15, color: white),
+        ),
       ),
     );
   }
