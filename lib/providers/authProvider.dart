@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,6 +40,24 @@ class AuthProvider with ChangeNotifier {
     prefs.setString('user_email', user?.email ?? '');
     prefs.setString('user_name', user?.displayName ?? '');
     prefs.setString('user_photo', user?.photoURL ?? '');
+
+    if (user != null) {
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      DocumentSnapshot userSnapshot = await users.doc(user.uid).get();
+
+      if (!userSnapshot.exists) {
+        await users.doc(user.uid).set({
+          'uid': user.uid,
+          'name': user.displayName,
+          'email': user.email,
+          'photo': user.photoURL,
+          'address': '',
+        });
+      } else {
+        print('Pengguna sudah ada.');
+      }
+    }
   }
 
   Future<void> signOut() async {

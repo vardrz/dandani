@@ -5,7 +5,7 @@ import 'package:social_login_buttons/social_login_buttons.dart';
 
 import 'package:dandani/util/colors.dart';
 
-import 'package:dandani/providers/auth.dart';
+import 'package:dandani/providers/authProvider.dart';
 
 Future<bool> redirect() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();

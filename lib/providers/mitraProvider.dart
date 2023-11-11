@@ -1,4 +1,4 @@
-import 'package:dandani/models/detailMitra.dart';
+import 'package:dandani/models/detailMitraModel.dart';
 import 'package:flutter/material.dart';
 
 class MitraProvider extends ChangeNotifier {

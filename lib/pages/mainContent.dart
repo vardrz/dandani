@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:dandani/providers/userProvider.dart';
+import 'package:dandani/providers/listChatProvider.dart';
 
 import 'package:dandani/util/colors.dart';
 
 import 'package:dandani/pages/home.dart';
-import 'package:dandani/pages/chat.dart';
+import 'package:dandani/pages/listChat.dart';
 import 'package:dandani/pages/mitra.dart';
 import 'package:dandani/pages/account.dart';
 
@@ -14,6 +18,20 @@ class MainContent extends StatefulWidget {
 }
 
 class _MainContentState extends State<MainContent> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeUserData();
+  }
+
+  Future<void> _initializeUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userEmail = prefs.getString('user_email') ?? '';
+    Provider.of<UserProvider>(context, listen: false).updateUserData(userEmail);
+    Provider.of<ConversationProvider>(context, listen: false)
+        .getConversations();
+  }
+
   // Bottom Navigation
   int _selectedIndex = 0;
 

@@ -43,9 +43,7 @@ class _MitraPageState extends State<MitraPage> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return Center(
-                    child: Container(
-                        child: Text('User belum terdaftar sebagai mitra')));
+                return BeforeRegister();
               } else {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
@@ -138,6 +136,73 @@ class Data {
       city: json['city'],
       photo: json['photo'],
       maps: json['maps'] ?? '',
+    );
+  }
+}
+
+class BeforeRegister extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.4),
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 10),
+            child: Text(
+              "Gabung Mitra",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Text(
+            "Promosikan jasa anda di aplikasi Dandani agar lebih banyak dijangkau orang.",
+            style: TextStyle(fontSize: 20),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => RegistMitra()));
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: 30),
+              width: 200,
+              height: 37,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15),
+                  ),
+                  color: purplePrimary),
+              child: Center(
+                child: Text(
+                  "Gabung",
+                  style: TextStyle(
+                      color: white, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class RegistMitra extends StatelessWidget {
+  const RegistMitra({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gabung Mitra'),
+        backgroundColor: purplePrimary,
+      ),
+      body: Center(
+        child: Text("Form Register Mitra"),
+      ),
     );
   }
 }

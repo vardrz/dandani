@@ -4,7 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:dandani/models/listMitra.dart';
+import 'package:dandani/models/listMitraModel.dart';
 import 'package:dandani/util/colors.dart';
 import 'package:dandani/widgets/widget.dart';
 
@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                         if (snapshot.hasData) {
                           List<ListMitra> mitraList = snapshot.data!;
                           return Transform.translate(
-                            offset: Offset(0, -40),
+                            offset: Offset(0, -25),
                             child: StaggeredGridView.countBuilder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,

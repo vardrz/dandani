@@ -1,5 +1,5 @@
-import 'package:dandani/models/detailMitra.dart';
-import 'package:dandani/providers/mitra.dart';
+import 'package:dandani/models/detailMitraModel.dart';
+import 'package:dandani/providers/mitraProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:dandani/util/colors.dart';

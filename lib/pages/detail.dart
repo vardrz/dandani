@@ -1,9 +1,13 @@
-import 'package:dandani/util/colors.dart';
-import 'package:dandani/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:dandani/models/detailMitra.dart';
-import 'package:dandani/providers/mitra.dart';
+
+import 'package:dandani/widgets/widget.dart';
+import 'package:dandani/util/colors.dart';
+
+import 'package:dandani/models/detailMitraModel.dart';
+
+import 'package:dandani/providers/mitraProvider.dart';
+import 'package:dandani/providers/listChatProvider.dart';
 
 class DetailPage extends StatelessWidget {
   // const DetailPage({super.key});
@@ -11,6 +15,9 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Mitra? mitra = Provider.of<MitraProvider>(context).mitra;
+    var userLoggedEmail =
+        Provider.of<ConversationProvider>(context).userLoggedEmail;
+    double widthButtonWA = (mitra?.account == userLoggedEmail) ? 0.88 : 0.67;
 
     return Scaffold(
       appBar: AppBar(
@@ -117,31 +124,42 @@ Blanditiis doloribus perferendis ipsam sed consequatur aliquam possimus cumque l
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: purplePrimary),
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    height: 60,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.message,
-                          color: white,
+                  if (mitra.account != userLoggedEmail) ...[
+                    InkWell(
+                      onTap: () {
+                        Provider.of<ConversationProvider>(context,
+                                listen: false)
+                            .getConversationsByEmail(mitra.name, mitra.account);
+
+                        Navigator.pushNamed(context, '/chat');
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: purplePrimary),
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        height: 60,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.message,
+                              color: white,
+                            ),
+                            Text(
+                              "Chat",
+                              style: TextStyle(color: white, fontSize: 10),
+                            )
+                          ],
                         ),
-                        Text(
-                          "Chat",
-                          style: TextStyle(color: white, fontSize: 10),
-                        )
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                   Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         color: Color(0xFF128C7E)),
-                    width: MediaQuery.of(context).size.width * 0.67,
+                    width: MediaQuery.of(context).size.width * widthButtonWA,
                     height: 60,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
