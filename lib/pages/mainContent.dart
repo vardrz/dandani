@@ -44,50 +44,93 @@ class _MainContentState extends State<MainContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 5,
-              blurRadius: 10,
-              offset: Offset(0, 3),
+    return WillPopScope(
+        child: Scaffold(
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 5,
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
-          ],
+            child: SalomonBottomBar(
+              backgroundColor: white,
+              currentIndex: _selectedIndex,
+              onTap: (i) => setState(() => _selectedIndex = i),
+              items: [
+                SalomonBottomBarItem(
+                  icon: Icon(Icons.home),
+                  title: Text("Home"),
+                  selectedColor: purplePrimary,
+                ),
+                SalomonBottomBarItem(
+                  icon: Icon(Icons.message),
+                  title: Text("Chat"),
+                  selectedColor: purplePrimary,
+                ),
+                SalomonBottomBarItem(
+                  icon: Icon(Icons.store),
+                  title: Text("Mitra"),
+                  selectedColor: purplePrimary,
+                ),
+                SalomonBottomBarItem(
+                  icon: Icon(Icons.person),
+                  title: Text("Akun"),
+                  selectedColor: purplePrimary,
+                ),
+              ],
+            ),
+          ),
         ),
-        child: SalomonBottomBar(
-          backgroundColor: white,
-          currentIndex: _selectedIndex,
-          onTap: (i) => setState(() => _selectedIndex = i),
-          items: [
-            SalomonBottomBarItem(
-              icon: Icon(Icons.home),
-              title: Text("Home"),
-              selectedColor: purplePrimary,
-            ),
-            SalomonBottomBarItem(
-              icon: Icon(Icons.message),
-              title: Text("Chat"),
-              selectedColor: purplePrimary,
-            ),
-            SalomonBottomBarItem(
-              icon: Icon(Icons.store),
-              title: Text("Mitra"),
-              selectedColor: purplePrimary,
-            ),
-            SalomonBottomBarItem(
-              icon: Icon(Icons.person),
-              title: Text("Akun"),
-              selectedColor: purplePrimary,
-            ),
-          ],
-        ),
-      ),
-    );
+        onWillPop: () async {
+          // Tampilkan dialog konfirmasi
+          bool confirm = await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Konfirmasi'),
+                content: Text('Keluar dari aplikasi?'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Tutup dialog dan kembalikan nilai true
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text('Ya'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Tutup dialog dan kembalikan nilai false
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 60,
+                      height: 30,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: purplePrimary),
+                      child: Text(
+                        'Tidak',
+                        style: TextStyle(color: white),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+
+          // Return `false` jika pengguna membatalkan keluar
+          return confirm;
+        });
   }
 }

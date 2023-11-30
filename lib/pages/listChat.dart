@@ -19,7 +19,23 @@ class ListChatPage extends StatelessWidget {
             itemBuilder: (context, index) {
               var conversation = conversations[index];
               var lastMessage = conversation.messages.isNotEmpty
-                  ? conversation.messages.first.content
+                  ? (conversation.messages.last.senderId == userEmail)
+                      ? (conversation.messages.last.content.length > 20)
+                          ? 'Me: ' +
+                              conversation.messages.last.content
+                                  .replaceAll("\n", " ")
+                                  .substring(0, 20) +
+                              '...'
+                          : 'Me: ' +
+                              conversation.messages.last.content
+                                  .replaceAll("\n", " ")
+                      : (conversation.messages.last.content.length > 20)
+                          ? conversation.messages.last.content
+                                  .replaceAll("\n", " ")
+                                  .substring(0, 20) +
+                              '...'
+                          : conversation.messages.last.content
+                              .replaceAll("\n", " ")
                   : '...';
 
               return ListTile(

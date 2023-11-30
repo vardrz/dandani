@@ -1,5 +1,5 @@
 name: dandani
-description: A new Flutter project.
+description: Aplikasi Informasi Jasa Servis Sekitar.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  another_flutter_splash_screen:
   provider: ^6.0.5
   http: ^1.1.0
   firebase_auth:
@@ -42,12 +43,20 @@ dependencies:
   carousel_slider: ^4.2.1
   flutter_staggered_grid_view: ^0.4.0
   chat_bubbles: ^1.5.0
+  custom_pop_up_menu: ^1.2.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   change_app_package_name: ^1.1.0
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
+
+flutter_icons:
+  image_path: "assets/Dandani-Icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

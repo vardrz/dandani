@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:dandani/pages/splash.dart';
 import 'package:dandani/pages/mainContent.dart';
 import 'package:dandani/pages/login.dart';
 import 'package:dandani/pages/home.dart';
@@ -22,21 +22,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? userEmail = prefs.getString('user_email');
-
-  runApp(MyApp(isUserLoggedIn: userEmail != null ? '/maincontent' : '/login'));
-
-  // runApp(MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final String isUserLoggedIn;
-  MyApp({required this.isUserLoggedIn});
-
   final ThemeData appTheme = ThemeData(
     appBarTheme: AppBarTheme(backgroundColor: purplePrimary),
     primaryColor: purplePrimary,
+    primarySwatch: Colors.deepPurple,
   );
 
   @override
@@ -52,7 +45,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         theme: appTheme,
         title: 'Dandani',
-        initialRoute: isUserLoggedIn,
+        home: SplashScreen(),
         routes: {
           '/login': (context) => LoginPage(),
           '/maincontent': (context) => MainContent(),

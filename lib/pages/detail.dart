@@ -129,7 +129,7 @@ Blanditiis doloribus perferendis ipsam sed consequatur aliquam possimus cumque l
                       onTap: () {
                         Provider.of<ConversationProvider>(context,
                                 listen: false)
-                            .getConversationsByEmail(mitra.name, mitra.account);
+                            .getConversationsByMitra(mitra.name, mitra.account);
 
                         Navigator.pushNamed(context, '/chat');
                       },

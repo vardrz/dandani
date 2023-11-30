@@ -39,6 +39,7 @@ class ConversationProvider with ChangeNotifier {
           await FirebaseFirestore.instance
               .collection('chats')
               .where('participants', arrayContains: userEmail)
+              .orderBy('timestamp', descending: true)
               .get();
 
       List<Conversation> conversations =
@@ -51,6 +52,7 @@ class ConversationProvider with ChangeNotifier {
 
         List<Message> messages = messagesSnapshot.docs.map((messageDoc) {
           return Message(
+            messageId: messageDoc.id,
             senderId: messageDoc['senderId'],
             content: messageDoc['content'],
             timestamp: (messageDoc['timestamp'] as Timestamp).toDate(),
@@ -74,7 +76,7 @@ class ConversationProvider with ChangeNotifier {
     }
   }
 
-  Future<List<Conversation>> getConversationsByEmail(
+  Future<List<Conversation>> getConversationsByMitra(
       String title, mitraEmail) async {
     Conversation loadConversations = Conversation(
       id: '-',
@@ -89,7 +91,7 @@ class ConversationProvider with ChangeNotifier {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance
               .collection('chats')
-              .where('participants', arrayContains: userLoggedEmail)
+              .where('participants', isEqualTo: [userLoggedEmail, mitraEmail])
               .where('title', isEqualTo: title)
               .get();
 
@@ -104,6 +106,7 @@ class ConversationProvider with ChangeNotifier {
 
           List<Message> messages = messagesSnapshot.docs.map((messageDoc) {
             return Message(
+              messageId: messageDoc.id,
               senderId: messageDoc['senderId'],
               content: messageDoc['content'],
               timestamp: (messageDoc['timestamp'] as Timestamp).toDate(),
@@ -135,6 +138,109 @@ class ConversationProvider with ChangeNotifier {
     } catch (e) {
       print('Error: $e');
       return [];
+    }
+  }
+
+  Future<void> refreshConversation(String id) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await FirebaseFirestore.instance.collection('chats').doc(id).get();
+
+      if (documentSnapshot.exists) {
+        List<Message> messages = [];
+        QuerySnapshot<Map<String, dynamic>> messagesSnapshot =
+            await FirebaseFirestore.instance
+                .collection('chats')
+                .doc(id)
+                .collection('messages')
+                .orderBy('timestamp')
+                .get();
+
+        messages = messagesSnapshot.docs.map((messageDoc) {
+          return Message(
+            messageId: messageDoc.id,
+            senderId: messageDoc['senderId'],
+            content: messageDoc['content'],
+            timestamp: (messageDoc['timestamp'] as Timestamp).toDate(),
+          );
+        }).toList();
+
+        Conversation conversation = Conversation(
+          id: documentSnapshot.id,
+          title: documentSnapshot.data()?['title'],
+          participants: List<String>.from(documentSnapshot['participants']),
+          messages: messages,
+        );
+
+        setActiveConversation(conversation);
+      } else {
+        print('Dokumen dengan ID $id tidak ditemukan.');
+      }
+
+      notifyListeners();
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> createConversationAndSendMessage(
+      String mitraEmail, mitraName, content) async {
+    try {
+      // Create new chat and send message
+      CollectionReference chatsRef =
+          FirebaseFirestore.instance.collection('chats');
+
+      DocumentReference newChat = await chatsRef.add({
+        'participants': [userLoggedEmail, mitraEmail],
+        'timestamp': Timestamp.now(),
+        'title': mitraName
+      });
+      CollectionReference sendMessage = newChat.collection('messages');
+      await sendMessage.add({
+        'senderId': userLoggedEmail,
+        'content': content,
+        'timestamp': Timestamp.now(),
+      });
+
+      // Store to activeConversation
+      String newChatId = newChat.id;
+
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(newChatId)
+              .get();
+
+      List<Message> messages = [];
+      QuerySnapshot<Map<String, dynamic>> messagesSnapshot =
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(newChatId)
+              .collection('messages')
+              .orderBy('timestamp')
+              .get();
+
+      messages = messagesSnapshot.docs.map((messageDoc) {
+        return Message(
+          messageId: messageDoc.id,
+          senderId: messageDoc['senderId'],
+          content: messageDoc['content'],
+          timestamp: (messageDoc['timestamp'] as Timestamp).toDate(),
+        );
+      }).toList();
+
+      Conversation conversation = Conversation(
+        id: documentSnapshot.id,
+        title: documentSnapshot.data()?['title'],
+        participants: List<String>.from(documentSnapshot['participants']),
+        messages: messages,
+      );
+
+      setActiveConversation(conversation);
+
+      notifyListeners();
+    } catch (e) {
+      print('Error creating conversation and sending message: $e');
     }
   }
 }
