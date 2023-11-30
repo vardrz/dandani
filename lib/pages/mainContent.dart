@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:dandani/providers/userProvider.dart';
 import 'package:dandani/providers/listChatProvider.dart';
@@ -44,6 +45,18 @@ class _MainContentState extends State<MainContent> {
 
   @override
   Widget build(BuildContext context) {
+    // if notif received
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      Provider.of<ConversationProvider>(context, listen: false)
+          .getConversations();
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("Message clicked: $message");
+      Provider.of<ConversationProvider>(context, listen: false)
+          .getConversations();
+    });
+
     return WillPopScope(
         child: Scaffold(
           body: IndexedStack(
