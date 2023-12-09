@@ -28,9 +28,18 @@ class _MainContentState extends State<MainContent> {
   Future<void> _initializeUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userEmail = prefs.getString('user_email') ?? '';
+    String? notifReceiver = prefs.getString('user_email')?.replaceAll('@', '');
+    // Init userData & chat
     Provider.of<UserProvider>(context, listen: false).updateUserData(userEmail);
     Provider.of<ConversationProvider>(context, listen: false)
         .getConversations();
+    // Init Topic FCM
+    if (notifReceiver != null && notifReceiver.isNotEmpty) {
+      print("SubscribeToTopic: " + notifReceiver);
+      await FirebaseMessaging.instance.subscribeToTopic(notifReceiver);
+    } else {
+      print('Error: Topik tidak valid.');
+    }
   }
 
   // Bottom Navigation
@@ -47,7 +56,7 @@ class _MainContentState extends State<MainContent> {
   Widget build(BuildContext context) {
     // if notif received
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
+      print('Got message on foreground!');
       Provider.of<ConversationProvider>(context, listen: false)
           .getConversations();
     });

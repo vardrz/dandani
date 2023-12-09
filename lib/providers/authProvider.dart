@@ -61,12 +61,15 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    // Clear SharedPreferences Data
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
-
+    // Logout from FirebaseAuth & GoogleSignIn
     await _auth.signOut();
     await _googleSignIn.signOut();
+    // Clear user data
     _user = null;
+
     notifyListeners();
   }
 }

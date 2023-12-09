@@ -78,25 +78,33 @@ class jasaListWidget extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: 180,
-            width: double.infinity,
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    fit: BoxFit.cover, image: NetworkImage(photo))),
-            child: Wrap(
+              border: Border(
+                top: BorderSide(color: Colors.grey.shade300),
+                left: BorderSide(color: Colors.grey.shade300),
+                right: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+            child: Stack(
               children: [
+                FadeInImage(
+                  width: double.infinity,
+                  height: 180,
+                  placeholder: AssetImage('assets/grayload.gif'),
+                  image: NetworkImage(photo),
+                  fit: BoxFit.cover,
+                ),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.only(bottomRight: Radius.circular(10.0)),
                     color: purplePrimaryTrans,
                   ),
-                  // color: purplePrimary,
                   child: Padding(
                     padding: EdgeInsets.all(5),
                     child: Text(
                       district,
-                      style: TextStyle(color: white),
+                      style: TextStyle(color: white, fontSize: 12),
                     ),
                   ),
                 ),

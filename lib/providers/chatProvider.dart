@@ -9,6 +9,7 @@ class ChatProvider extends ChangeNotifier {
   Future<void> sendMessage(
       String conversationId, String senderId, String content) async {
     try {
+      // create new message
       await _firestore
           .collection('chats')
           .doc(conversationId)
@@ -17,6 +18,11 @@ class ChatProvider extends ChangeNotifier {
         'senderId': senderId,
         'content': content,
         'timestamp': Timestamp.now(),
+      });
+      // update timestamp & read
+      await _firestore.collection('chats').doc(conversationId).update({
+        'timestamp': Timestamp.now(),
+        'read': false,
       });
     } catch (e) {
       print('Error sending message: $e');

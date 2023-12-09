@@ -1,4 +1,5 @@
 import 'package:dandani/util/colors.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,7 +50,8 @@ class AccountPage extends StatelessWidget {
                         ),
                         CircleAvatar(
                           radius: 60,
-                          backgroundImage: NetworkImage(user.photo),
+                          backgroundImage: AssetImage('assets/load.gif'),
+                          foregroundImage: NetworkImage(user.photo),
                         ),
                       ],
                     )),
@@ -160,9 +162,13 @@ class AccountPage extends StatelessWidget {
                         ),
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           Provider.of<AuthProvider>(context, listen: false)
                               .signOut();
+                          print("UnsubscribeToTopic: " +
+                              user.email.replaceAll('@', ''));
+                          await FirebaseMessaging.instance.unsubscribeFromTopic(
+                              user.email.replaceAll('@', ''));
                           Navigator.of(context).pushReplacementNamed('/login');
                         },
                         child: Container(

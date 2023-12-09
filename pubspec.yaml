@@ -48,11 +48,12 @@ dependencies:
   chat_bubbles: ^1.5.0
   custom_pop_up_menu: ^1.2.4
   notification_permissions: ^0.6.1
+  flutter_form_builder: ^9.1.1
+  form_builder_validators: ^9.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  change_app_package_name: ^1.1.0
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
 
@@ -73,6 +74,10 @@ flutter:
     - assets/logo-white.png
     - assets/logo-purple.png
     - assets/dummy-banner.jpg
+    - assets/load.gif
+    - assets/grayload.gif
+    - assets/images/user.webp
+    - assets/images/service.webp
     - assets/icons/icon-google-maps.png
     - assets/icons/icon-whatsapp.png
 
