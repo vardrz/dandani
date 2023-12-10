@@ -34,7 +34,8 @@ dependencies:
   shared_preferences: ^2.2.2
   another_flutter_splash_screen:
   provider: ^6.0.5
-  http: ^1.1.0
+  # http: ^1.1.0
+  http: ^0.13.6
   firebase_auth:
   firebase_core: ^2.24.0
   cloud_firestore: ^4.12.2
@@ -50,6 +51,8 @@ dependencies:
   notification_permissions: ^0.6.1
   flutter_form_builder: ^9.1.1
   form_builder_validators: ^9.1.0
+  open_street_map_search_and_pick: ^0.1.0
+  latlong2: ^0.8.1
 
 dev_dependencies:
   flutter_test:
