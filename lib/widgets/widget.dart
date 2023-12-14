@@ -45,17 +45,25 @@ class kategoriWidget extends StatelessWidget {
 class jasaListWidget extends StatelessWidget {
   final String account;
   final String name;
+  final String desc;
   final String specialist;
-  final String district;
+  final String whatsapp;
+  final String province;
   final String city;
+  final String district;
+  final String maps;
   final String photo;
 
   const jasaListWidget(
       {required this.account,
       required this.name,
+      required this.desc,
       required this.specialist,
-      required this.district,
+      required this.whatsapp,
+      required this.province,
       required this.city,
+      required this.district,
+      required this.maps,
       required this.photo});
 
   @override
@@ -63,9 +71,13 @@ class jasaListWidget extends StatelessWidget {
     final Mitra mitra = Mitra(
       account,
       name,
+      desc,
       specialist,
-      district,
+      whatsapp,
+      province,
       city,
+      district,
+      maps,
       photo,
     );
 
@@ -73,7 +85,6 @@ class jasaListWidget extends StatelessWidget {
       onTap: () {
         Provider.of<MitraProvider>(context, listen: false).setMitra(mitra);
         Navigator.pushNamed(context, '/detail');
-        print('pressed ' + name);
       },
       child: Column(
         children: [
@@ -91,7 +102,9 @@ class jasaListWidget extends StatelessWidget {
                   width: double.infinity,
                   height: 180,
                   placeholder: AssetImage('assets/grayload.gif'),
-                  image: NetworkImage(photo),
+                  image: (photo.contains('default.jpg'))
+                      ? AssetImage('assets/images/default.jpg')
+                      : NetworkImage(photo as String) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
                 Container(
@@ -158,7 +171,7 @@ class BadgeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> badgeTexts = specialist.split(', ');
+    List<String> badgeTexts = specialist.replaceAll(', ', ',').split(',');
 
     return Wrap(
       spacing: 2.0,
@@ -185,12 +198,11 @@ class BadgeWidget extends StatelessWidget {
 
 class BadgeWidget2 extends StatelessWidget {
   final String specialist;
-
   BadgeWidget2({required this.specialist});
 
   @override
   Widget build(BuildContext context) {
-    List<String> badgeTexts = specialist.split(', ');
+    List<String> badgeTexts = specialist.replaceAll(', ', ',').split(',');
 
     return Wrap(
       spacing: 2.0,

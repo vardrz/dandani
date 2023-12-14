@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,18 +13,36 @@ import 'package:dandani/pages/mainContent.dart';
 
 import 'package:dandani/util/colors.dart';
 
-class RegistMitra extends StatefulWidget {
-  const RegistMitra({super.key});
+class MitraUpdate extends StatefulWidget {
+  final String name;
+  final String desc;
+  final String specialist;
+  final String whatsapp;
+  final String province;
+  final String city;
+  final String district;
+  final String maps;
+
+  // const MitraUpdate({super.key});
+  const MitraUpdate({
+    Key? key,
+    required this.name,
+    required this.desc,
+    required this.specialist,
+    required this.whatsapp,
+    required this.province,
+    required this.city,
+    required this.district,
+    required this.maps,
+  }) : super(key: key);
 
   @override
-  State<RegistMitra> createState() => _RegistMitraState();
+  State<MitraUpdate> createState() => _MitraUpdateState();
 }
 
-class _RegistMitraState extends State<RegistMitra> {
+class _MitraUpdateState extends State<MitraUpdate> {
   final _formKey = GlobalKey<FormBuilderState>();
-  double lat = 0, long = 0;
-  // final FocusNode _focusNode = FocusNode();
-  // bool _isFocused = false;
+  late String latlong;
 
   List<Map<String, String>> province = [];
   List<Map<String, String>> kota = [];
@@ -33,20 +52,18 @@ class _RegistMitraState extends State<RegistMitra> {
   void initState() {
     super.initState();
     fetchProvince();
-    // _focusNode.addListener(onFocusChange);
+
+    latlong = widget.maps;
+    Timer(Duration(seconds: 1), () async {
+      var provId =
+          province.firstWhere((element) => element['name'] == widget.province);
+      fetchKota(provId['id']);
+    });
+    Timer(Duration(seconds: 3), () {
+      var kotaId = kota.firstWhere((element) => element['name'] == widget.city);
+      fetchKecamatan(kotaId['id']);
+    });
   }
-
-  // void onFocusChange() {
-  //   setState(() {
-  //     _isFocused = _focusNode.hasFocus ? true : false;
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   _focusNode.removeListener(onFocusChange);
-  //   super.dispose();
-  // }
 
   Future<void> fetchProvince() async {
     final response = await http.get(Uri.parse(
@@ -129,7 +146,7 @@ class _RegistMitraState extends State<RegistMitra> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gabung Mitra'),
+        title: Text('Update Data Mitra'),
         backgroundColor: purplePrimary,
       ),
       body: FormBuilder(
@@ -143,6 +160,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsets.only(bottom: 10),
                   child: FormBuilderTextField(
+                    initialValue: widget.name,
                     name: 'nama',
                     decoration: InputDecoration(
                       labelText: 'Nama Jasa/Tempat',
@@ -172,6 +190,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: FormBuilderTextField(
+                    initialValue: widget.desc,
                     name: 'deskripsi',
                     textAlign: TextAlign.start,
                     decoration: InputDecoration(
@@ -210,6 +229,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: FormBuilderTextField(
+                    initialValue: widget.specialist,
                     name: 'spesialis',
                     decoration: InputDecoration(
                       labelText: 'Spesialis',
@@ -245,10 +265,11 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsets.only(top: 10, bottom: 10),
                   child: FormBuilderField(
+                    initialValue: widget.whatsapp,
                     name: 'whatsapp',
-                    initialValue: '+62',
                     builder: (value) {
                       return IntlPhoneField(
+                        initialValue: widget.whatsapp,
                         decoration: InputDecoration(
                           labelText: 'Nomor Whatsapp',
                           border: new OutlineInputBorder(
@@ -304,6 +325,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsetsDirectional.only(top: 20, bottom: 10),
                   child: FormBuilderDropdown(
+                    initialValue: widget.province,
                     name: 'prov',
                     decoration: InputDecoration(
                       labelText: 'Provinsi',
@@ -348,6 +370,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsets.only(bottom: 10),
                   child: FormBuilderDropdown(
+                    initialValue: widget.city,
                     name: 'kota',
                     decoration: InputDecoration(
                       labelText: 'Kota',
@@ -390,6 +413,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 ),
                 // Kecamatan
                 FormBuilderDropdown(
+                  initialValue: widget.district,
                   name: 'kecamatan',
                   decoration: InputDecoration(
                     labelText: 'Kecamatan',
@@ -461,7 +485,7 @@ class _RegistMitraState extends State<RegistMitra> {
                 Container(
                   margin: EdgeInsets.only(bottom: 15),
                   child: FormBuilderTextField(
-                    initialValue: "${lat.toString()},${long.toString()}",
+                    initialValue: latlong,
                     readOnly: true,
                     name: 'latlong',
                     textAlign: TextAlign.center,
@@ -495,16 +519,6 @@ class _RegistMitraState extends State<RegistMitra> {
                     ]),
                   ),
                 ),
-                FormBuilderCheckbox(
-                  activeColor: purplePrimary,
-                  name: 'tos',
-                  title: Text(
-                      'Dengan mendaftar sebagai mitra anda menyetujui Syarat dan Ketentuan serta bersedia membagikan data anda kepada pihak Dandani.'),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.equal(true,
-                        errorText: 'Anda harus menyetujui persyaratan.'),
-                  ]),
-                ),
                 // Submit Button
                 InkWell(
                   child: Container(
@@ -516,7 +530,7 @@ class _RegistMitraState extends State<RegistMitra> {
                         borderRadius: BorderRadius.circular(50),
                         color: purplePrimary),
                     child: Text(
-                      'Daftar Sebagai Mitra',
+                      'Perbarui Data',
                       style: TextStyle(
                           color: white,
                           fontSize: 16,
@@ -525,30 +539,85 @@ class _RegistMitraState extends State<RegistMitra> {
                   ),
                   onTap: () {
                     if (_formKey.currentState!.saveAndValidate()) {
-                      // print(_formKey.currentState!.value);
-                      Provider.of<MitraProvider>(context, listen: false)
-                          .storeMitra(
-                        _formKey.currentState?.value['nama'],
-                        _formKey.currentState?.value['deskripsi'],
-                        _formKey.currentState?.value['spesialis'],
-                        _formKey.currentState?.value['whatsapp'],
-                        _formKey.currentState?.value['prov'],
-                        _formKey.currentState?.value['kota'],
-                        _formKey.currentState?.value['kecamatan'],
-                        _formKey.currentState?.value['latlong'],
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Konfirmasi'),
+                            content: Text('Perbarui data anda?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Batal'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Provider.of<MitraProvider>(context,
+                                          listen: false)
+                                      .updateMitra(
+                                    _formKey.currentState?.value['nama'],
+                                    _formKey.currentState?.value['deskripsi'],
+                                    _formKey.currentState?.value['spesialis'],
+                                    _formKey.currentState?.value['whatsapp'],
+                                    _formKey.currentState?.value['prov'],
+                                    _formKey.currentState?.value['kota'],
+                                    _formKey.currentState?.value['kecamatan'],
+                                    _formKey.currentState?.value['latlong'],
+                                  );
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const MainContent(
+                                          fromMitraRegist: true),
+                                    ),
+                                    (route) => false,
+                                  );
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  width: 60,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: purplePrimary),
+                                  child: Text(
+                                    'Perbarui',
+                                    style: TextStyle(color: white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                MainContent(fromMitraRegist: true),
-                          ),
-                          (route) => false);
                     } else {
                       _showError(context);
                     }
                   },
-                )
+                ),
+                // Back
+                // InkWell(
+                //   child: Container(
+                //     margin: EdgeInsets.only(bottom: 10),
+                //     width: double.infinity,
+                //     height: 60,
+                //     alignment: Alignment.center,
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(50),
+                //       color: purpleSecondary,
+                //     ),
+                //     child: Text(
+                //       'Kembali',
+                //       style: TextStyle(
+                //           color: white,
+                //           fontSize: 16,
+                //           fontWeight: FontWeight.bold),
+                //     ),
+                //   ),
+                //   onTap: () => Navigator.pop(context),
+                // )
               ],
             ),
           ),
@@ -570,17 +639,16 @@ class _RegistMitraState extends State<RegistMitra> {
             child: OpenStreetMapSearchAndPick(
                 locationPinIconColor: purplePrimary,
                 locationPinText: '',
-                center: LatLong(-6.8950837, 109.6335747),
+                center: LatLong(double.parse(latlong.split(',').first),
+                    double.parse(latlong.split(',').last)),
                 buttonColor: purplePrimary,
                 buttonText: 'Pilih lokasi ini',
                 onPicked: (pickedData) {
                   Navigator.pop(context);
                   setState(() {
-                    lat = pickedData.latLong.latitude;
-                    long = pickedData.latLong.longitude;
-                    _formKey.currentState!
-                        .patchValue({'latlong': '$lat,$long'});
-                    print('$lat, $long');
+                    latlong =
+                        "${pickedData.latLong.latitude},${pickedData.latLong.longitude}";
+                    _formKey.currentState!.patchValue({'latlong': '$latlong'});
                   });
                 }),
           ),

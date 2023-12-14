@@ -14,15 +14,24 @@ import 'package:dandani/pages/mitra.dart';
 import 'package:dandani/pages/account.dart';
 
 class MainContent extends StatefulWidget {
+  final bool fromMitraRegist;
+
+  const MainContent({Key? key, required this.fromMitraRegist})
+      : super(key: key);
+
   @override
-  _MainContentState createState() => _MainContentState();
+  State<MainContent> createState() => _MainContentState();
+  // _MainContentState createState() => _MainContentState();
 }
 
 class _MainContentState extends State<MainContent> {
+  int _selectedIndex = 0; // selected index fro Bottom Navigation
+
   @override
   void initState() {
     super.initState();
     _initializeUserData();
+    widget.fromMitraRegist ? _selectedIndex = 2 : _selectedIndex = 0;
   }
 
   Future<void> _initializeUserData() async {
@@ -43,8 +52,6 @@ class _MainContentState extends State<MainContent> {
   }
 
   // Bottom Navigation
-  int _selectedIndex = 0;
-
   final List<Widget> _pages = [
     HomePage(),
     ListChatPage(),

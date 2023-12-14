@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:notification_permissions/notification_permissions.dart';
+import 'package:google_fonts/google_fonts.dart';
 // Pages
 import 'package:dandani/pages/splash.dart';
 import 'package:dandani/pages/mainContent.dart';
@@ -29,6 +30,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final ThemeData appTheme = ThemeData(
+    fontFamily: GoogleFonts.lato().fontFamily,
     appBarTheme: AppBarTheme(backgroundColor: purplePrimary),
     primaryColor: purplePrimary,
     primarySwatch: Colors.deepPurple,
@@ -50,7 +52,9 @@ class MyApp extends StatelessWidget {
         home: SplashScreen(),
         routes: {
           '/login': (context) => LoginPage(),
-          '/maincontent': (context) => MainContent(),
+          '/maincontent': (context) => MainContent(
+                fromMitraRegist: false,
+              ),
           '/home': (context) => HomePage(),
           '/detail': (context) => DetailPage(),
           '/chat': (context) => ChatPage(),
