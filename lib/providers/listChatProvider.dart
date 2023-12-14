@@ -62,6 +62,7 @@ class ConversationProvider with ChangeNotifier {
         return Conversation(
           id: doc.id,
           title: doc.data()['title'],
+          read: doc.data()['read'],
           participants: List<String>.from(doc['participants']),
           messages: messages,
         );
@@ -81,6 +82,7 @@ class ConversationProvider with ChangeNotifier {
     Conversation loadConversations = Conversation(
       id: '-',
       title: title,
+      read: true,
       participants: List<String>.from([userLoggedEmail, mitraEmail]),
       messages: List<Message>.empty(),
     );
@@ -116,6 +118,7 @@ class ConversationProvider with ChangeNotifier {
           return Conversation(
             id: doc.id,
             title: doc.data()['title'],
+            read: doc.data()['read'],
             participants: List<String>.from(doc['participants']),
             messages: messages,
           );
@@ -126,6 +129,7 @@ class ConversationProvider with ChangeNotifier {
         Conversation conversations = Conversation(
           id: '-',
           title: title,
+          read: true,
           participants: List<String>.from([userLoggedEmail, mitraEmail]),
           messages: List<Message>.empty(),
         );
@@ -168,6 +172,7 @@ class ConversationProvider with ChangeNotifier {
         Conversation conversation = Conversation(
           id: documentSnapshot.id,
           title: documentSnapshot.data()?['title'],
+          read: documentSnapshot.data()?['read'],
           participants: List<String>.from(documentSnapshot['participants']),
           messages: messages,
         );
@@ -193,7 +198,8 @@ class ConversationProvider with ChangeNotifier {
       DocumentReference newChat = await chatsRef.add({
         'participants': [userLoggedEmail, mitraEmail],
         'timestamp': Timestamp.now(),
-        'title': mitraName
+        'title': mitraName,
+        'read': true
       });
       CollectionReference sendMessage = newChat.collection('messages');
       await sendMessage.add({
@@ -232,6 +238,7 @@ class ConversationProvider with ChangeNotifier {
       Conversation conversation = Conversation(
         id: documentSnapshot.id,
         title: documentSnapshot.data()?['title'],
+        read: documentSnapshot.data()?['read'],
         participants: List<String>.from(documentSnapshot['participants']),
         messages: messages,
       );
@@ -241,6 +248,19 @@ class ConversationProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error creating conversation and sending message: $e');
+    }
+  }
+
+  Future<void> readConversation(String conversationId) async {
+    try {
+      // update read
+      await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(conversationId)
+          .update({'read': true});
+    } catch (e) {
+      print('Error update read: $e');
+      throw e;
     }
   }
 }

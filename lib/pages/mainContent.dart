@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:dandani/providers/userProvider.dart';
 import 'package:dandani/providers/listChatProvider.dart';
@@ -13,28 +14,44 @@ import 'package:dandani/pages/mitra.dart';
 import 'package:dandani/pages/account.dart';
 
 class MainContent extends StatefulWidget {
+  final bool fromMitraRegist;
+
+  const MainContent({Key? key, required this.fromMitraRegist})
+      : super(key: key);
+
   @override
-  _MainContentState createState() => _MainContentState();
+  State<MainContent> createState() => _MainContentState();
+  // _MainContentState createState() => _MainContentState();
 }
 
 class _MainContentState extends State<MainContent> {
+  int _selectedIndex = 0; // selected index fro Bottom Navigation
+
   @override
   void initState() {
     super.initState();
     _initializeUserData();
+    widget.fromMitraRegist ? _selectedIndex = 2 : _selectedIndex = 0;
   }
 
   Future<void> _initializeUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userEmail = prefs.getString('user_email') ?? '';
+    String? notifReceiver = prefs.getString('user_email')?.replaceAll('@', '');
+    // Init userData & chat
     Provider.of<UserProvider>(context, listen: false).updateUserData(userEmail);
     Provider.of<ConversationProvider>(context, listen: false)
         .getConversations();
+    // Init Topic FCM
+    if (notifReceiver != null && notifReceiver.isNotEmpty) {
+      print("SubscribeToTopic: " + notifReceiver);
+      await FirebaseMessaging.instance.subscribeToTopic(notifReceiver);
+    } else {
+      print('Error: Topik tidak valid.');
+    }
   }
 
   // Bottom Navigation
-  int _selectedIndex = 0;
-
   final List<Widget> _pages = [
     HomePage(),
     ListChatPage(),
@@ -44,6 +61,18 @@ class _MainContentState extends State<MainContent> {
 
   @override
   Widget build(BuildContext context) {
+    // if notif received
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got message on foreground!');
+      Provider.of<ConversationProvider>(context, listen: false)
+          .getConversations();
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("Message clicked: $message");
+      Provider.of<ConversationProvider>(context, listen: false)
+          .getConversations();
+    });
+
     return WillPopScope(
         child: Scaffold(
           body: IndexedStack(

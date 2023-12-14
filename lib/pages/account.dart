@@ -1,6 +1,10 @@
 import 'package:dandani/util/colors.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 import 'package:dandani/providers/userProvider.dart';
 import 'package:dandani/providers/authProvider.dart';
@@ -15,44 +19,61 @@ class AccountPage extends StatelessWidget {
           children: <Widget>[
             Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(100),
-                        bottomLeft: Radius.circular(100)),
-                    color: purplePrimary,
+                Transform.flip(
+                  flipY: true,
+                  child: WaveWidget(
+                    config: CustomConfig(
+                      colors: [
+                        purpleSecondary,
+                        purplePrimary,
+                      ],
+                      durations: [
+                        5000,
+                        4000,
+                      ],
+                      heightPercentages: [
+                        -1.00,
+                        -0.85,
+                      ],
+                    ),
+                    backgroundColor: Colors.transparent,
+                    size: Size(double.infinity, 100),
+                    waveAmplitude: 0,
                   ),
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  // padding: EdgeInsets.only(top: 60),
-                  // child:
                 ),
                 Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.1),
-                    child: Column(
-                      children: [
-                        FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Padding(
-                            padding: const EdgeInsets.all(30),
-                            child: Text(
-                              user.name,
-                              style: TextStyle(
-                                fontSize: 23,
-                                letterSpacing: 2,
-                                color: white,
-                              ),
-                            ),
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.13,
+                    // top: 100,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 30),
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundImage: AssetImage('assets/load.gif'),
+                          foregroundImage: NetworkImage(user.photo),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => print('Edit Foto User'),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          margin: EdgeInsets.only(bottom: 25),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: purplePrimary,
                           ),
+                          child: Icon(Ionicons.sync, color: white),
                         ),
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundImage: NetworkImage(user.photo),
-                        ),
-                      ],
-                    )),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             Expanded(
@@ -71,7 +92,7 @@ class AccountPage extends StatelessWidget {
                         child: Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(right: 50),
+                              padding: const EdgeInsets.only(right: 30),
                               child: Icon(Icons.person),
                             ),
                             Flexible(
@@ -95,7 +116,7 @@ class AccountPage extends StatelessWidget {
                         child: Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(right: 50),
+                              padding: const EdgeInsets.only(right: 30),
                               child: Icon(Icons.mail),
                             ),
                             Flexible(
@@ -119,7 +140,7 @@ class AccountPage extends StatelessWidget {
                         child: Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(right: 50),
+                              padding: const EdgeInsets.only(right: 30),
                               child: Icon(Icons.maps_home_work),
                             ),
                             FittedBox(
@@ -137,7 +158,7 @@ class AccountPage extends StatelessWidget {
                       Divider(
                         color: grey,
                       ),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           print("Press Edit Profile");
                         },
@@ -159,11 +180,52 @@ class AccountPage extends StatelessWidget {
                           )),
                         ),
                       ),
-                      InkWell(
-                        onTap: () {
-                          Provider.of<AuthProvider>(context, listen: false)
-                              .signOut();
-                          Navigator.of(context).pushReplacementNamed('/login');
+                      GestureDetector(
+                        onTap: () async {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Logout'),
+                                content: Text('Logout dari akun ini?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () async {
+                                      Provider.of<AuthProvider>(context,
+                                              listen: false)
+                                          .signOut();
+                                      print(
+                                          "UnsubscribeToTopic: ${user.email.replaceAll('@', '')}");
+                                      FirebaseMessaging.instance
+                                          .unsubscribeFromTopic(
+                                              user.email.replaceAll('@', ''));
+                                      Navigator.of(context)
+                                          .pushReplacementNamed('/login');
+                                    },
+                                    child: Text('Ya'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      width: 60,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: purplePrimary),
+                                      child: Text(
+                                        'Tidak',
+                                        style: TextStyle(color: white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: Container(
                           margin: EdgeInsets.only(bottom: 20),

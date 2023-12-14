@@ -206,12 +206,26 @@ class _ChatPageState extends State<ChatPage> {
                           await chatProvider.sendMessage(
                               activeConversation.id, userEmail, content);
                         }
-                        conversationProvider
-                            .getConversations(); // Refress List Conversation
-                        setState(() =>
-                            _emptyMessage = false); // Hide 'belum ada pesan'
-                        _scrollController.jumpTo(_scrollController
-                            .position.maxScrollExtent); // Scroll end
+                        // Send Notif
+                        String topic =
+                            (userEmail == activeConversation.participants[0])
+                                ? activeConversation.participants[1]
+                                    .replaceAll('@', '')
+                                : activeConversation.participants[0]
+                                    .replaceAll('@', '');
+                        String sender =
+                            (userEmail == activeConversation.participants[0])
+                                ? activeConversation.participants[0]
+                                : activeConversation.title;
+                        print(topic);
+                        chatProvider.sendNotif(topic, sender, content);
+                        // Refress List Conversation
+                        conversationProvider.getConversations();
+                        // Hide 'belum ada pesan'
+                        setState(() => _emptyMessage = false);
+                        // Scroll to end
+                        _scrollController
+                            .jumpTo(_scrollController.position.maxScrollExtent);
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -246,10 +260,6 @@ class _ChatPageState extends State<ChatPage> {
               ),
             );
           }
-
-          // if (snapshot.connectionState == ConnectionState.waiting) {
-          //   return Center(child: CircularProgressIndicator());
-          // }
 
           return Center(child: CircularProgressIndicator());
         },

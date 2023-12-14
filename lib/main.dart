@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:notification_permissions/notification_permissions.dart';
+import 'package:google_fonts/google_fonts.dart';
+// Pages
 import 'package:dandani/pages/splash.dart';
 import 'package:dandani/pages/mainContent.dart';
 import 'package:dandani/pages/login.dart';
@@ -9,9 +11,9 @@ import 'package:dandani/pages/home.dart';
 import 'package:dandani/pages/detail.dart';
 import 'package:dandani/pages/account.dart';
 import 'package:dandani/pages/chat.dart';
-
+// Util
 import 'package:dandani/util/colors.dart';
-
+// Provider
 import 'package:dandani/providers/authProvider.dart';
 import 'package:dandani/providers/userProvider.dart';
 import 'package:dandani/providers/mitraProvider.dart';
@@ -20,6 +22,7 @@ import 'package:dandani/providers/chatProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationPermissions.requestNotificationPermissions();
   await Firebase.initializeApp();
 
   runApp(MyApp());
@@ -27,6 +30,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final ThemeData appTheme = ThemeData(
+    fontFamily: GoogleFonts.lato().fontFamily,
     appBarTheme: AppBarTheme(backgroundColor: purplePrimary),
     primaryColor: purplePrimary,
     primarySwatch: Colors.deepPurple,
@@ -48,7 +52,9 @@ class MyApp extends StatelessWidget {
         home: SplashScreen(),
         routes: {
           '/login': (context) => LoginPage(),
-          '/maincontent': (context) => MainContent(),
+          '/maincontent': (context) => MainContent(
+                fromMitraRegist: false,
+              ),
           '/home': (context) => HomePage(),
           '/detail': (context) => DetailPage(),
           '/chat': (context) => ChatPage(),
