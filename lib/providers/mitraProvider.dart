@@ -70,4 +70,23 @@ class MitraProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> updatePhotoMitra(String account, photo) async {
+    final Uri url = Uri.parse('http://dandani.vaard.site/api/mitras/update');
+    final Map<String, String> body = {
+      'account': account,
+      'photo': photo,
+    };
+
+    final Response response = await post(url, body: body);
+
+    if (response.statusCode == 201) {
+      print(response.statusCode);
+      print(response);
+    } else {
+      print(response);
+    }
+
+    notifyListeners();
+  }
 }

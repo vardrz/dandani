@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +18,20 @@ Future<bool> redirect() async {
   return userEmail != '' && userEmail.isNotEmpty;
 }
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late String textLogin;
+
+  @override
+  void initState() {
+    textLogin = "Masuk";
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -80,19 +95,30 @@ class LoginPage extends StatelessWidget {
                       if (isUserLoggedIn) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           // Navigator.pushReplacementNamed(context, '/maincontent');
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, '/maincontent', (route) => false);
+                          Timer(Duration(seconds: 1), () {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/maincontent', (route) => false);
+                          });
                         });
-                        return SizedBox.shrink();
+                        return SocialLoginButton(
+                          backgroundColor: purpleSecondary,
+                          textColor: white,
+                          text: "Success",
+                          buttonType: SocialLoginButtonType.google,
+                          borderRadius: 30,
+                          fontSize: 17,
+                          onPressed: () {},
+                        );
                       } else {
                         return SocialLoginButton(
                           backgroundColor: purplePrimary,
                           textColor: white,
-                          text: 'Masuk',
+                          text: textLogin,
                           buttonType: SocialLoginButtonType.google,
                           borderRadius: 30,
                           fontSize: 17,
                           onPressed: () async {
+                            setState(() => textLogin = 'Sign in ...');
                             await authProvider.signInWithGoogle();
                           },
                         );

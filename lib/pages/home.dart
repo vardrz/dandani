@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:http/http.dart' as http;
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 import 'package:dandani/models/listMitraModel.dart';
 import 'package:dandani/util/colors.dart';
 import 'package:dandani/widgets/widget.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
+import 'package:dandani/pages/search.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -76,6 +77,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _search = TextEditingController();
+
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -121,7 +124,64 @@ class _HomePageState extends State<HomePage> {
                           iconSize: 25,
                           color: Colors.white,
                           onPressed: () {
-                            print('pressed search');
+                            showDialog(
+                              context: context,
+                              barrierColor: Colors.black.withOpacity(0.7),
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Cari'),
+                                  content: TextField(
+                                    controller: _search,
+                                    autofocus: true,
+                                    decoration: InputDecoration(
+                                      hintText: 'Cari tempat servis ...',
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'Batal',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          String search = _search.text;
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => SearchPage(
+                                                search: search,
+                                                city: "",
+                                                district: "",
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Cari',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: purplePrimary,
+                                          shadowColor: Colors.transparent,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                         ),
                       ],
@@ -151,15 +211,21 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         kategoriWidget(
                           text: 'Laptop',
+                          keyword: 'laptop',
                           icon: Icons.laptop,
+                          searchController: _search,
                         ),
                         kategoriWidget(
                           text: 'Handphone',
+                          keyword: 'hp',
                           icon: Icons.smartphone,
+                          searchController: _search,
                         ),
                         kategoriWidget(
                           text: 'Televisi',
+                          keyword: 'tv',
                           icon: Icons.tv,
+                          searchController: _search,
                         ),
                       ],
                     ),
@@ -170,15 +236,21 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           kategoriWidget(
                             text: 'AC',
+                            keyword: 'ac',
                             icon: Icons.ac_unit,
+                            searchController: _search,
                           ),
                           kategoriWidget(
-                            text: 'Kendaraan',
+                            text: 'Motor',
+                            keyword: 'motor',
                             icon: Icons.motorcycle,
+                            searchController: _search,
                           ),
                           kategoriWidget(
                             text: 'Lainnya',
+                            keyword: 'search',
                             icon: Icons.electrical_services,
+                            searchController: _search,
                           ),
                         ],
                       ),

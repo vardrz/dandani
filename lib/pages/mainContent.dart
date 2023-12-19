@@ -39,7 +39,7 @@ class _MainContentState extends State<MainContent> {
     String userEmail = prefs.getString('user_email') ?? '';
     String? notifReceiver = prefs.getString('user_email')?.replaceAll('@', '');
     // Init userData & chat
-    Provider.of<UserProvider>(context, listen: false).updateUserData(userEmail);
+    Provider.of<UserProvider>(context, listen: false).addUserData(userEmail);
     Provider.of<ConversationProvider>(context, listen: false)
         .getConversations();
     // Init Topic FCM

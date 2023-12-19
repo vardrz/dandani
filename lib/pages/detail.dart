@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 
 import 'package:dandani/widgets/widget.dart';
 import 'package:dandani/util/colors.dart';
@@ -41,9 +42,18 @@ class DetailPage extends StatelessWidget {
         Provider.of<ConversationProvider>(context).userLoggedEmail;
     double widthButtonWA = (mitra?.account == userLoggedEmail) ? 0.88 : 0.67;
 
+    List<Widget> photoList = mitra!.photo
+        .split(',')
+        .where((link) => link.isNotEmpty)
+        .map((link) => Image(
+              image: NetworkImage(link),
+              fit: BoxFit.fill,
+            ))
+        .toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(mitra!.name),
+        title: Text(mitra.name),
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,
@@ -54,58 +64,53 @@ class DetailPage extends StatelessWidget {
               children: [
                 // main info
                 Container(
-                  height: 300,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: mitra.photo.contains('default.jpg')
-                          ? AssetImage('assets/images/default.jpg')
-                          : NetworkImage(mitra.photo) as ImageProvider,
+                  width: double.maxFinite,
+                  height: 250,
+                  child: FlutterCarousel(
+                    options: CarouselOptions(
+                      viewportFraction: 1.0,
+                      showIndicator: true,
+                      slideIndicator: const CircularSlideIndicator(),
                     ),
+                    items: photoList,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                ),
+                // title
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  width: double.infinity,
+                  color: purplePrimaryTrans,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                        width: double.infinity,
-                        color: purplePrimaryTrans,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    mitra.name,
-                                    style: TextStyle(
-                                        color: white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    mitra.district + ', ' + mitra.city,
-                                    style: TextStyle(color: white),
-                                  ),
-                                ],
-                              ),
+                            Text(
+                              mitra.name,
+                              style: TextStyle(
+                                  color: white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
                             ),
-                            InkWell(
-                              onTap: () => _openMap(mitra.maps),
-                              child: Container(
-                                margin: EdgeInsets.only(right: 10),
-                                child: Image.asset(
-                                  'assets/icons/icon-google-maps.png',
-                                  scale: 1.8,
-                                ),
-                              ),
-                            )
+                            Text(
+                              mitra.district + ', ' + mitra.city,
+                              style: TextStyle(color: white),
+                            ),
                           ],
                         ),
                       ),
+                      InkWell(
+                        onTap: () => _openMap(mitra.maps),
+                        child: Container(
+                          margin: EdgeInsets.only(right: 10),
+                          child: Image.asset(
+                            'assets/icons/icon-google-maps.png',
+                            scale: 1.8,
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
