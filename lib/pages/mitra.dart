@@ -71,7 +71,7 @@ class _MitraPageState extends State<MitraPage> {
     mitras = fetchData();
 
     refreshData = Timer.periodic(Duration(seconds: 10), (timer) {
-      print("refress");
+      print("refress mitra");
       setState(() {
         mitras = fetchData();
       });

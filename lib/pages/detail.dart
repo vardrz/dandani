@@ -70,7 +70,10 @@ class DetailPage extends StatelessWidget {
                     options: CarouselOptions(
                       viewportFraction: 1.0,
                       showIndicator: true,
-                      slideIndicator: const CircularSlideIndicator(),
+                      slideIndicator: const CircularSlideIndicator(
+                        indicatorBackgroundColor: grey,
+                        currentIndicatorColor: purpleSecondary,
+                      ),
                     ),
                     items: photoList,
                   ),
