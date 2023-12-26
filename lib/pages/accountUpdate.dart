@@ -181,7 +181,9 @@ class _AccountUpdateState extends State<AccountUpdate> {
                 Container(
                   margin: EdgeInsetsDirectional.only(top: 20, bottom: 10),
                   child: FormBuilderDropdown(
-                    initialValue: widget.address.split(',')[0],
+                    initialValue: widget.address != ''
+                        ? widget.address.split(',')[0]
+                        : '',
                     name: 'prov',
                     decoration: InputDecoration(
                       labelText: 'Provinsi',
@@ -215,7 +217,7 @@ class _AccountUpdateState extends State<AccountUpdate> {
                             ))
                         .toList(),
                     onChanged: (name) {
-                      print('Provinsi dipilih: $name');
+                      // print('Provinsi dipilih: $name');
                       var provId = province
                           .firstWhere((element) => element['name'] == name);
                       fetchKota(provId['id']);
@@ -226,7 +228,9 @@ class _AccountUpdateState extends State<AccountUpdate> {
                 Container(
                   margin: EdgeInsets.only(bottom: 10),
                   child: FormBuilderDropdown(
-                    initialValue: widget.address.split(',')[1],
+                    initialValue: widget.address != ''
+                        ? widget.address.split(',')[1]
+                        : '',
                     name: 'kota',
                     decoration: InputDecoration(
                       labelText: 'Kota',
@@ -260,7 +264,7 @@ class _AccountUpdateState extends State<AccountUpdate> {
                             ))
                         .toList(),
                     onChanged: (name) {
-                      print('Kota dipilih: $name');
+                      // print('Kota dipilih: $name');
                       var kotaId =
                           kota.firstWhere((element) => element['name'] == name);
                       fetchKecamatan(kotaId['id']);
@@ -269,7 +273,8 @@ class _AccountUpdateState extends State<AccountUpdate> {
                 ),
                 // Kecamatan
                 FormBuilderDropdown(
-                  initialValue: widget.address.split(',')[2],
+                  initialValue:
+                      widget.address != '' ? widget.address.split(',')[2] : '',
                   name: 'kecamatan',
                   decoration: InputDecoration(
                     labelText: 'Kecamatan',

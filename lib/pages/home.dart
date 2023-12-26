@@ -22,9 +22,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Slider Image
   static final List<String> imgList = [
-    'dummy-banner.jpg',
-    'dummy-banner.jpg',
-    'dummy-banner.jpg'
+    'banner1.png',
+    'banner2.png',
+    'banner3.png'
   ];
 
   // Slider
@@ -59,7 +59,6 @@ class _HomePageState extends State<HomePage> {
 
     refreshData = Timer.periodic(Duration(seconds: 10), (timer) {
       setState(() {
-        print("refress home");
         mitras = fetchAPI();
       });
     });
@@ -316,7 +315,26 @@ class _HomePageState extends State<HomePage> {
                             );
                           } else if (snapshot.hasError) {
                             return Center(
-                                child: Text('Error: ${snapshot.error}'));
+                              child: Container(
+                                margin: EdgeInsets.only(top: 80),
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 5),
+                                      child: Text(
+                                        'Tidak Ditemukan',
+                                        style: TextStyle(fontSize: 25),
+                                      ),
+                                    ),
+                                    Text(
+                                      'Data tempat service di alamat anda belum tersedia, coba cari di alamat lain.',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           }
 
                           return Padding(

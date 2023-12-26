@@ -110,7 +110,7 @@ class AccountPage extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(right: 30),
-                              child: Icon(Icons.person),
+                              child: Icon(Ionicons.person_outline),
                             ),
                             Flexible(
                               child: FittedBox(
@@ -134,7 +134,7 @@ class AccountPage extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(right: 30),
-                              child: Icon(Icons.mail),
+                              child: Icon(Ionicons.mail_outline),
                             ),
                             Flexible(
                               child: FittedBox(
@@ -158,7 +158,7 @@ class AccountPage extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(right: 30),
-                              child: Icon(Icons.maps_home_work),
+                              child: Icon(Ionicons.location_outline),
                             ),
                             Flexible(
                               child: Text(
@@ -228,8 +228,7 @@ class AccountPage extends StatelessWidget {
                                       Provider.of<AuthProvider>(context,
                                               listen: false)
                                           .signOut();
-                                      print(
-                                          "UnsubscribeToTopic: ${user.email.replaceAll('@', '')}");
+                                      // print("UnsubscribeToTopic: ${user.email.replaceAll('@', '')}");
                                       FirebaseMessaging.instance
                                           .unsubscribeFromTopic(
                                               user.email.replaceAll('@', ''));
@@ -335,7 +334,7 @@ class _UpdatePpPageState extends State<UpdatePpPage> {
 
     reference.putFile(cacheImage).whenComplete(() async {
       final url = await reference.getDownloadURL();
-      print(url);
+      // print(url);
 
       Provider.of<UserProvider>(context, listen: false)
           .updatePhoto(widget.uid, url);
@@ -351,8 +350,8 @@ class _UpdatePpPageState extends State<UpdatePpPage> {
 
     pickedFile =
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 20);
-    print(path.extension(pickedFile!.path));
-    print(await File(pickedFile.path).length());
+    // print(path.extension(pickedFile!.path));
+    // print(await File(pickedFile.path).length());
 
     setState(() {
       picked = true;
