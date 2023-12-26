@@ -42,7 +42,7 @@ class MitraUpdate extends StatefulWidget {
 
 class _MitraUpdateState extends State<MitraUpdate> {
   final _formKey = GlobalKey<FormBuilderState>();
-  late String latlong;
+  late String latlong, provinceSelected, citySelected, districtSelected;
 
   List<Map<String, String>> province = [];
   List<Map<String, String>> kota = [];
@@ -53,13 +53,17 @@ class _MitraUpdateState extends State<MitraUpdate> {
     super.initState();
     fetchProvince();
 
+    provinceSelected = widget.province;
+    citySelected = widget.city;
+    districtSelected = widget.district;
     latlong = widget.maps;
-    Timer(Duration(seconds: 1), () async {
+
+    Timer(Duration(seconds: 2), () async {
       var provId =
           province.firstWhere((element) => element['name'] == widget.province);
       fetchKota(provId['id']);
     });
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 4), () {
       var kotaId = kota.firstWhere((element) => element['name'] == widget.city);
       fetchKecamatan(kotaId['id']);
     });
@@ -325,7 +329,7 @@ class _MitraUpdateState extends State<MitraUpdate> {
                 Container(
                   margin: EdgeInsetsDirectional.only(top: 20, bottom: 10),
                   child: FormBuilderDropdown(
-                    initialValue: widget.province,
+                    initialValue: provinceSelected,
                     name: 'prov',
                     decoration: InputDecoration(
                       labelText: 'Provinsi',
@@ -360,6 +364,10 @@ class _MitraUpdateState extends State<MitraUpdate> {
                         .toList(),
                     onChanged: (name) {
                       print('Provinsi dipilih: $name');
+                      setState(() {
+                        provinceSelected = name!;
+                      });
+
                       var provId = province
                           .firstWhere((element) => element['name'] == name);
                       fetchKota(provId['id']);
@@ -370,7 +378,7 @@ class _MitraUpdateState extends State<MitraUpdate> {
                 Container(
                   margin: EdgeInsets.only(bottom: 10),
                   child: FormBuilderDropdown(
-                    initialValue: widget.city,
+                    initialValue: citySelected,
                     name: 'kota',
                     decoration: InputDecoration(
                       labelText: 'Kota',
@@ -405,6 +413,10 @@ class _MitraUpdateState extends State<MitraUpdate> {
                         .toList(),
                     onChanged: (name) {
                       print('Kota dipilih: $name');
+                      setState(() {
+                        citySelected = name!;
+                      });
+
                       var kotaId =
                           kota.firstWhere((element) => element['name'] == name);
                       fetchKecamatan(kotaId['id']);
@@ -413,7 +425,7 @@ class _MitraUpdateState extends State<MitraUpdate> {
                 ),
                 // Kecamatan
                 FormBuilderDropdown(
-                  initialValue: widget.district,
+                  initialValue: districtSelected,
                   name: 'kecamatan',
                   decoration: InputDecoration(
                     labelText: 'Kecamatan',
@@ -446,6 +458,11 @@ class _MitraUpdateState extends State<MitraUpdate> {
                             value: kec,
                           ))
                       .toList(),
+                  onChanged: (name) {
+                    setState(() {
+                      districtSelected = name!;
+                    });
+                  },
                 ),
                 // Pick Location
                 InkWell(
@@ -597,27 +614,6 @@ class _MitraUpdateState extends State<MitraUpdate> {
                     }
                   },
                 ),
-                // Back
-                // InkWell(
-                //   child: Container(
-                //     margin: EdgeInsets.only(bottom: 10),
-                //     width: double.infinity,
-                //     height: 60,
-                //     alignment: Alignment.center,
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(50),
-                //       color: purpleSecondary,
-                //     ),
-                //     child: Text(
-                //       'Kembali',
-                //       style: TextStyle(
-                //           color: white,
-                //           fontSize: 16,
-                //           fontWeight: FontWeight.bold),
-                //     ),
-                //   ),
-                //   onTap: () => Navigator.pop(context),
-                // )
               ],
             ),
           ),

@@ -40,7 +40,7 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateUserData(String newEmail) async {
+  Future<void> addUserData(String newEmail) async {
     try {
       CollectionReference users =
           FirebaseFirestore.instance.collection('users');
@@ -58,6 +58,50 @@ class UserProvider with ChangeNotifier {
       }
     } catch (e) {
       throw Exception('Gagal memperbarui data pengguna: $e');
+    }
+  }
+
+  Future<void> updateUserData(String docid, name, address) async {
+    try {
+      // update data
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(docid)
+          .update({'name': name, 'address': address});
+
+      // refress data
+      DocumentSnapshot<Map<String, dynamic>> data =
+          await FirebaseFirestore.instance.collection('users').doc(docid).get();
+      if (data.exists) {
+        var dataUser = (data.data() as Map<String, dynamic>);
+        _user = User.fromJson(dataUser);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Failed update user data: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updatePhoto(String docid, link) async {
+    try {
+      // update data
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(docid)
+          .update({'photo': link});
+
+      // refress data
+      DocumentSnapshot<Map<String, dynamic>> data =
+          await FirebaseFirestore.instance.collection('users').doc(docid).get();
+      if (data.exists) {
+        var dataUser = (data.data() as Map<String, dynamic>);
+        _user = User.fromJson(dataUser);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Failed update user data: $e');
+      throw e;
     }
   }
 }

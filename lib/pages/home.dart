@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:http/http.dart' as http;
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
+import 'package:provider/provider.dart';
+import 'package:dandani/providers/userProvider.dart';
 
 import 'package:dandani/models/listMitraModel.dart';
 import 'package:dandani/util/colors.dart';
 import 'package:dandani/widgets/widget.dart';
-import 'package:wave/config.dart';
-import 'package:wave/wave.dart';
+import 'package:dandani/pages/search.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,9 +22,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Slider Image
   static final List<String> imgList = [
-    'dummy-banner.jpg',
-    'dummy-banner.jpg',
-    'dummy-banner.jpg'
+    'banner1.png',
+    'banner2.png',
+    'banner3.png'
   ];
 
   // Slider
@@ -45,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   );
 
   // API
+  String address = "";
   late Future<List<ListMitra>> mitras;
   late Timer refreshData;
 
@@ -61,8 +65,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<ListMitra>> fetchAPI() async {
-    final response =
-        await http.get(Uri.parse('http://dandani.vaard.site/mitras'));
+    final http.Response response;
+    if (address != "") {
+      final Uri url = Uri.parse('http://dandani.vaard.site/api/district');
+      final Map<String, String> body = {
+        'province': address.split(',')[0],
+        'city': address.split(',')[1],
+        'district': address.split(',')[2],
+      };
+
+      response = await http.post(url, body: body);
+    } else {
+      response = await http.get(Uri.parse('http://dandani.vaard.site/mitras'));
+    }
 
     if (response.statusCode == 200) {
       List<dynamic> jsonList = json.decode(response.body);
@@ -76,6 +91,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _search = TextEditingController();
+    var user = Provider.of<UserProvider>(context).user;
+    setState(() {
+      address = user.address;
+    });
+
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -121,7 +142,64 @@ class _HomePageState extends State<HomePage> {
                           iconSize: 25,
                           color: Colors.white,
                           onPressed: () {
-                            print('pressed search');
+                            showDialog(
+                              context: context,
+                              barrierColor: Colors.black.withOpacity(0.7),
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Cari'),
+                                  content: TextField(
+                                    controller: _search,
+                                    autofocus: true,
+                                    decoration: InputDecoration(
+                                      hintText: 'Cari tempat servis ...',
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'Batal',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          String search = _search.text;
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => SearchPage(
+                                                search: search,
+                                                city: "",
+                                                district: "",
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Cari',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: purplePrimary,
+                                          shadowColor: Colors.transparent,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                         ),
                       ],
@@ -151,15 +229,21 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         kategoriWidget(
                           text: 'Laptop',
+                          keyword: 'laptop',
                           icon: Icons.laptop,
+                          searchController: _search,
                         ),
                         kategoriWidget(
                           text: 'Handphone',
+                          keyword: 'hp',
                           icon: Icons.smartphone,
+                          searchController: _search,
                         ),
                         kategoriWidget(
                           text: 'Televisi',
+                          keyword: 'tv',
                           icon: Icons.tv,
+                          searchController: _search,
                         ),
                       ],
                     ),
@@ -170,15 +254,21 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           kategoriWidget(
                             text: 'AC',
+                            keyword: 'ac',
                             icon: Icons.ac_unit,
+                            searchController: _search,
                           ),
                           kategoriWidget(
-                            text: 'Kendaraan',
+                            text: 'Motor',
+                            keyword: 'motor',
                             icon: Icons.motorcycle,
+                            searchController: _search,
                           ),
                           kategoriWidget(
                             text: 'Lainnya',
+                            keyword: 'search',
                             icon: Icons.electrical_services,
+                            searchController: _search,
                           ),
                         ],
                       ),
@@ -225,7 +315,26 @@ class _HomePageState extends State<HomePage> {
                             );
                           } else if (snapshot.hasError) {
                             return Center(
-                                child: Text('Error: ${snapshot.error}'));
+                              child: Container(
+                                margin: EdgeInsets.only(top: 80),
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 5),
+                                      child: Text(
+                                        'Tidak Ditemukan',
+                                        style: TextStyle(fontSize: 25),
+                                      ),
+                                    ),
+                                    Text(
+                                      'Data tempat service di alamat anda belum tersedia, coba cari di alamat lain.',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           }
 
                           return Padding(
@@ -245,11 +354,71 @@ class _HomePageState extends State<HomePage> {
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                barrierColor: Colors.black.withOpacity(0.7),
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Cari'),
+                                    content: TextField(
+                                      controller: _search,
+                                      autofocus: true,
+                                      decoration: InputDecoration(
+                                        hintText: 'Cari tempat servis ...',
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          'Batal',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(right: 10),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            String search = _search.text;
+                                            Navigator.pop(context);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SearchPage(
+                                                  search: search,
+                                                  city: "",
+                                                  district: "",
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                            'Cari',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: purplePrimary,
+                                            shadowColor: Colors.transparent,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
                             style: TextButton.styleFrom(
                                 padding: EdgeInsets.all(0)),
                             child: Text(
-                              'Lihat Semua',
+                              'Cari Jasa',
                               style: TextStyle(
                                   color: purpleSecondary,
                                   fontWeight: FontWeight.bold),

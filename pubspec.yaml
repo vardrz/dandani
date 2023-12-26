@@ -42,6 +42,7 @@ dependencies:
   firebase_auth:
   firebase_core: ^2.24.0
   cloud_firestore: ^4.12.2
+  firebase_storage: ^11.5.6
   firebase_messaging: ^14.7.6
   flutter_local_notifications:
   google_sign_in: ^6.1.5
@@ -59,6 +60,8 @@ dependencies:
   latlong2: ^0.8.1
   url_launcher: ^6.2.2
   google_fonts: ^4.0.4
+  image_picker: ^1.0.5
+  flutter_carousel_widget: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -82,7 +85,9 @@ flutter:
   assets:
     - assets/logo-white.png
     - assets/logo-purple.png
-    - assets/dummy-banner.jpg
+    - assets/banner1.png
+    - assets/banner2.png
+    - assets/banner3.png
     - assets/load.gif
     - assets/grayload.gif
     - assets/images/default.jpg

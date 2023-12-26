@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:dandani/pages/mitraPhoto.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:http/http.dart' as http;
@@ -62,9 +63,19 @@ class MitraPage extends StatefulWidget {
 }
 
 class _MitraPageState extends State<MitraPage> {
+  late Future<List<Data>> mitras;
+  late Timer refreshData;
+
   void initState() {
     super.initState();
-    fetchData();
+    mitras = fetchData();
+
+    refreshData = Timer.periodic(Duration(seconds: 10), (timer) {
+      print("refress mitra");
+      setState(() {
+        mitras = fetchData();
+      });
+    });
   }
 
   Future<List<Data>> fetchData() async {
@@ -89,37 +100,34 @@ class _MitraPageState extends State<MitraPage> {
     return Scaffold(
       body: Center(
         child: FutureBuilder<List<Data>>(
-          future: fetchData(),
+          future: mitras,
           builder: (context, snapshot) {
-            return RefreshIndicator(
-              child: Stack(
-                children: [
-                  Transform.flip(
-                    flipY: true,
-                    child: WaveWidget(
-                      config: CustomConfig(
-                        colors: [
-                          purpleSecondary,
-                          purplePrimary,
-                        ],
-                        durations: [
-                          5000,
-                          4000,
-                        ],
-                        heightPercentages: [
-                          -1.00,
-                          -0.85,
-                        ],
-                      ),
-                      backgroundColor: Colors.transparent,
-                      size: Size(double.infinity, 100),
-                      waveAmplitude: 0,
+            return Stack(
+              children: [
+                Transform.flip(
+                  flipY: true,
+                  child: WaveWidget(
+                    config: CustomConfig(
+                      colors: [
+                        purpleSecondary,
+                        purplePrimary,
+                      ],
+                      durations: [
+                        5000,
+                        4000,
+                      ],
+                      heightPercentages: [
+                        -1.00,
+                        -0.85,
+                      ],
                     ),
+                    backgroundColor: Colors.transparent,
+                    size: Size(double.infinity, 100),
+                    waveAmplitude: 0,
                   ),
-                  _listView(snapshot),
-                ],
-              ),
-              onRefresh: _pullRefresh,
+                ),
+                _listView(snapshot, context),
+              ],
             );
           },
         ),
@@ -127,10 +135,10 @@ class _MitraPageState extends State<MitraPage> {
     );
   }
 
-  Widget _listView(AsyncSnapshot snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator());
-    } else if (snapshot.hasError) {
+  Widget _listView(AsyncSnapshot snapshot, BuildContext context) {
+    // if (snapshot.connectionState == ConnectionState.waiting) {
+    //   return Center(child: CircularProgressIndicator());
+    if (snapshot.hasError) {
       return Center(child: Text('Error: ${snapshot.error}'));
     } else if (snapshot.data == null || snapshot.data!.isEmpty) {
       return BeforeRegister();
@@ -146,15 +154,23 @@ class _MitraPageState extends State<MitraPage> {
                 child: CircleAvatar(
                   radius: 100,
                   backgroundImage: AssetImage('assets/load.gif'),
-                  foregroundImage: snapshot.data[0].photo
-                          .toString()
-                          .contains('default.jpg')
-                      ? AssetImage('assets/images/default.jpg')
-                      : NetworkImage(snapshot.data[0].photo) as ImageProvider,
+                  foregroundImage:
+                      snapshot.data[0].photo.toString().contains('default.jpg')
+                          ? AssetImage('assets/images/default.jpg')
+                          : NetworkImage(snapshot.data[0].photo.split(',')[0])
+                              as ImageProvider,
                 ),
               ),
               GestureDetector(
-                onTap: () => print('Edit Foto Mitra'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          PhotoMitra(email: snapshot.data[0].account),
+                    ),
+                  );
+                },
                 child: Container(
                   width: 50,
                   height: 50,
@@ -372,12 +388,6 @@ class _MitraPageState extends State<MitraPage> {
         ],
       );
     }
-  }
-
-  Future<void> _pullRefresh() async {
-    setState(() {
-      fetchData();
-    });
   }
 }
 

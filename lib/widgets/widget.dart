@@ -1,4 +1,5 @@
 import 'package:dandani/models/detailMitraModel.dart';
+import 'package:dandani/pages/search.dart';
 import 'package:dandani/providers/mitraProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +7,93 @@ import 'package:dandani/util/colors.dart';
 
 class kategoriWidget extends StatelessWidget {
   final String text;
+  final String keyword;
   final icon;
+  final TextEditingController searchController;
 
-  const kategoriWidget({required this.text, required this.icon});
+  const kategoriWidget({
+    required this.text,
+    required this.keyword,
+    required this.icon,
+    required this.searchController,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style:
-          ElevatedButton.styleFrom(primary: grey, padding: EdgeInsets.all(0)),
-      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+          backgroundColor: grey, padding: EdgeInsets.all(0)),
+      onPressed: () {
+        (keyword == 'search')
+            ? showDialog(
+                context: context,
+                barrierColor: Colors.black.withOpacity(0.7),
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('Cari'),
+                    content: TextField(
+                      controller: searchController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: 'Cari jasa servis ...',
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Batal',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            String search = searchController.text;
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SearchPage(
+                                  search: search,
+                                  city: "",
+                                  district: "",
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Cari',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: purplePrimary,
+                            shadowColor: Colors.transparent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              )
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchPage(
+                    search: text,
+                    city: "",
+                    district: "",
+                  ),
+                ),
+              );
+      },
       child: Container(
           width: MediaQuery.of(context).size.width * 0.29,
           height: MediaQuery.of(context).size.width * 0.3 * 0.9,
@@ -104,7 +182,7 @@ class jasaListWidget extends StatelessWidget {
                   placeholder: AssetImage('assets/grayload.gif'),
                   image: (photo.contains('default.jpg'))
                       ? AssetImage('assets/images/default.jpg')
-                      : NetworkImage(photo as String) as ImageProvider,
+                      : NetworkImage(photo.split(',')[0]) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
                 Container(
