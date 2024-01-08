@@ -240,19 +240,6 @@ class _ChatPageState extends State<ChatPage> {
                         );
                       }
                     },
-                    actions: [
-                      InkWell(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: purplePrimary,
-                            size: 24,
-                          ),
-                        ),
-                        onTap: () {},
-                      ),
-                    ],
                     sendButtonColor: purplePrimary,
                     messageBarHitText: "Ketik pesan ...",
                   ),

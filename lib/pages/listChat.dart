@@ -39,11 +39,33 @@ class _ListChatPageState extends State<ListChatPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Center(child: Text('Chat')),
-      // ),
       body: Stack(
         children: [
+          if (Provider.of<ConversationProvider>(context).conversations.length ==
+              0) ...[
+            Center(
+              child: Container(
+                margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.23),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 5),
+                      child: Text(
+                        'Kosong',
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
+                    Text(
+                      'Belum ada percakapan.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
           Container(
             margin: EdgeInsets.only(top: 100),
             child: Consumer<ConversationProvider>(

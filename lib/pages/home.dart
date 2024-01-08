@@ -59,6 +59,8 @@ class _HomePageState extends State<HomePage> {
 
     refreshData = Timer.periodic(Duration(seconds: 10), (timer) {
       setState(() {
+        address =
+            Provider.of<UserProvider>(context, listen: false).user.address;
         mitras = fetchAPI();
       });
     });
@@ -92,10 +94,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     TextEditingController _search = TextEditingController();
-    var user = Provider.of<UserProvider>(context).user;
-    setState(() {
-      address = user.address;
-    });
 
     return Scaffold(
       body: NestedScrollView(
