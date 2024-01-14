@@ -1,7 +1,9 @@
 
 # Dandani
-Platform penyedia informasi jasa dan tempat service di sekitar anda.
+Dandani adalah platform informasi layanan jasa terkhusus jasa service dan perbaikan yang menghubungkan pelanggan dengan penyedia jasa
+service.
+<br>Dandani memungkinkan pengguna mendapatkan informasi lengkap berbagai penyedia jasa service mulai dari elektronik, komputer, atau kendaraan bermotor di sekitar anda.
 
-![Status](https://img.shields.io/badge/Status-OnProgress-purple)
+![Status](https://img.shields.io/badge/Status-Release_v1.0.0-purple)
 
-<a href="https://drive.google.com/file/d/1__4aIIzvMMAL1X4yrp9DWDdTJ7V3oByF/view?usp=drive_link"><img src="https://seeklogo.com/images/D/download-android-apk-badge-logo-D074C6882B-seeklogo.com.png" width="150"/></a>
+<a href="https://play.google.com/store/apps/details?id=com.vard.dandani"><img src="https://www.freepnglogos.com/uploads/play-store-logo-png/play-store-logo-nisi-filters-australia-11.png" width="150"/></a>
